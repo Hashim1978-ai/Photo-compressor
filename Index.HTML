@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Free online image compressor tool. Compress PNG and JPG images without losing quality." />
+  <meta name="keywords" content="image compressor, online image compression, compress JPG, PNG" />
+  <title>Image Compressor Tool</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      margin-top: 50px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+
+    input[type="file"] {
+      margin: 15px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #output img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+
+    .download-link {
+      display: inline-block;
+      margin: 10px 5px;
+      padding: 8px 16px;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    /* Optional Ad styling */
+    .ad-container {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Image Compressor</h1>
+    <p>Upload and compress images for free</p>
+
+    <input type="file" id="upload" accept="image/*" multiple />
+    <br />
+    <button id="compress-btn">Compress Image(s)</button>
+
+    <div id="output"></div>
+
+    <!-- 🔸 Your Ad will appear here -->
+    <div class="ad-container">
+      <!-- Paste your AdSense code here after approval -->
+      <p>Advertisement</p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('compress-btn').addEventListener('click', function () {
+      const files = document.getElementById('upload').files;
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+
+      if (files.length === 0) {
+        alert("Please select image(s) to compress.");
+        return;
+      }
+
+      [...files].forEach(file => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = function (event) {
+          const img = new Image();
+          img.src = event.target.result;
+
+          img.onload = function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            const MAX_WIDTH = 800;
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scaleSize;
+
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(function (blob) {
+              const compressedUrl = URL.createObjectURL(blob);
+
+              const compressedImg = document.createElement('img');
+              compressedImg.src = compressedUrl;
+
+              const link = document.createElement('a');
+              link.href = compressedUrl;
+              link.download = 'compressed-' + file.name;
+              link.textContent = 'Download ' + file.name;
+              link.className = 'download-link';
+
+              output.appendChild(compressedImg);
+              output.appendChild(link);
+            }, 'image/jpeg', 0.7);
+          };
+        };
+      });
+    });
+  </script>
+</body>
+</html>
